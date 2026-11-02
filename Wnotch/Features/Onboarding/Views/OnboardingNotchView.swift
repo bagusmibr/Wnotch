@@ -1,0 +1,92 @@
+//
+//  OnboardingNotchView.swift
+//  Wnotch
+//
+//  Created by M on 4/7/26.
+//
+
+import SwiftUI
+
+struct OnboardingNotchView: View {
+    @Environment(\.openURL) private var openURL
+    @Environment(\.isNotchlessScreen) private var isNotchlessScreen
+    @Environment(\.locale) private var locale
+    
+    let step: OnboardingSteps
+    let onStepChange: (OnboardingSteps) -> Void
+    let onFinish: () -> Void
+    
+    var body: some View {
+        VStack {
+            stepContent
+            buttons
+        }
+        .padding(.top, isNotchlessScreen ? 10 : 30)
+        .padding(.horizontal, isNotchlessScreen ? 15 : 35)
+    }
+    
+    @ViewBuilder
+    private var stepContent: some View {
+        switch step {
+        case .first:
+            OnboardingNotchFirstStepView()
+        case .second:
+            OnboardingNotchSecondStepView()
+        }
+    }
+    
+    @ViewBuilder
+    private var buttons: some View {
+        switch step {
+        case .first:
+            HStack {
+                Button(action: {
+                    NSApp.terminate(nil)
+                }) {
+                    Text(locale.dn("notch.onboarding.exit", fallback: "Exit"))
+                        .fontWeight(.medium)
+                        .foregroundStyle(.red)
+                }
+                .buttonStyle(PrimaryButtonStyle(height: 35, backgroundColor: .red.opacity(0.25)))
+                
+                Spacer()
+                
+                Button(action: {
+                    onStepChange(.second)
+                }) {
+                    Text(locale.dn("notch.onboarding.continue", fallback: "Continue"))
+                        .fontWeight(.medium)
+                        .foregroundStyle(.blue)
+                }
+                .buttonStyle(PrimaryButtonStyle(height: 35, backgroundColor: .blue.opacity(0.25)))
+            }
+            
+        case .second:
+            HStack {
+                Button(action: {
+                    guard let url = URL(string: "x-apple.systempreferences:com.apple.preference.security") else {
+                        return
+                    }
+                    openURL(url)
+                    
+                }) {
+                    Text(locale.dn("notch.onboarding.openSettings", fallback: "Open Settings"))
+                        .fontWeight(.medium)
+                        .foregroundStyle(.white)
+                }
+                .buttonStyle(PrimaryButtonStyle(height: 35, backgroundColor: .gray.opacity(0.25)))
+                
+                Spacer()
+                
+                Button(action: {
+                    onFinish()
+                }) {
+                    Text(locale.dn("notch.onboarding.finish", fallback: "Finish"))
+                        .fontWeight(.medium)
+                        .foregroundStyle(.blue)
+                }
+                .buttonStyle(PrimaryButtonStyle(height: 35, backgroundColor: .blue.opacity(0.25)))
+            }
+        }
+    }
+}

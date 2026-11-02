@@ -1,0 +1,29 @@
+name: Build Wnotch
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select newest Xcode
+        run: |
+          ls -d /Applications/Xcode*.app
+          XCODE=$(ls -d /Applications/Xcode_*.app | sort -V | tail -1)
+          sudo xcode-select -s "$XCODE"
+          xcodebuild -version
+
+      - name: Build DMG
+        run: ./build_dmg.sh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Wnotch
+          path: build/dmg/Wnotch.dmg
+          if-no-files-found: error
