@@ -33,6 +33,13 @@ jobs:
       - name: Build DMG
         run: ./build_dmg.sh
 
+      - name: Verify universal binary
+        run: |
+          hdiutil attach -nobrowse -readonly -mountpoint /tmp/wn build/dmg/Wnotch.dmg
+          lipo -info /tmp/wn/Wnotch.app/Contents/MacOS/Wnotch
+          lipo /tmp/wn/Wnotch.app/Contents/MacOS/Wnotch -verify_arch arm64 x86_64
+          hdiutil detach /tmp/wn
+
       - uses: actions/upload-artifact@v4
         with:
           name: Wnotch
