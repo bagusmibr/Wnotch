@@ -159,6 +159,9 @@ final class ApplicationSettingsStore: SettingsStoreBase, NotchSettingsProviding 
     @StoredDefault(key: GeneralSettingsStorage.Keys.notchlessWindowMarginEnabled, defaultValue: true)
     var isNotchlessWindowMarginEnabled: Bool
 
+    @StoredDefault(key: GeneralSettingsStorage.Keys.idleNotchWidgetEnabled, defaultValue: true)
+    var isIdleNotchWidgetEnabled: Bool
+
     @StoredDefault(
         key: GeneralSettingsStorage.Keys.notchlessWindowMarginOffset,
         defaultValue: 17,
@@ -311,6 +314,7 @@ final class ApplicationSettingsStore: SettingsStoreBase, NotchSettingsProviding 
         isNotchSwipeRestoreEnabled = defaultBool(for: GeneralSettingsStorage.Keys.notchSwipeRestoreEnabled)
         isNotchHoverHapticEnabled = defaultBool(for: GeneralSettingsStorage.Keys.notchHoverHapticEnabled)
         isCloseAtFocusLiveActivityEnabled = defaultBool(for: GeneralSettingsStorage.Keys.closeAtFocusLiveActivityEnabled)
+        isIdleNotchWidgetEnabled = defaultBool(for: GeneralSettingsStorage.Keys.idleNotchWidgetEnabled)
     }
 
     func resetNotch() {

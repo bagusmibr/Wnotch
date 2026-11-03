@@ -128103,6 +128103,40 @@
         }
       }
     },
+    "settings.notch.idleWidget.desc": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show the time and battery in the notch when nothing else is active."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tampilkan jam dan baterai di notch saat tidak ada aktivitas lain."
+          }
+        }
+      }
+    },
+    "settings.notch.idleWidget.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clock when idle"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jam saat idle"
+          }
+        }
+      }
+    },
     "settings.notch.display.windowMarginOffset.desc": {
       "extractionState": "manual",
       "localizations": {
@@ -150097,13 +150131,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Show the current synced lyric line under the notch while Spotify is playing."
+            "value": "While Spotify is playing, the notch shows only the current synced lyric line."
           }
         },
         "id": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tampilkan baris lirik yang sedang dinyanyikan di bawah notch saat Spotify diputar."
+            "value": "Saat Spotify diputar, notch hanya menampilkan baris lirik yang sedang dinyanyikan."
           }
         }
       }

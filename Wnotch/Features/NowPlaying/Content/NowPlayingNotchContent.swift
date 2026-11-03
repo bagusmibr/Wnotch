@@ -38,27 +38,23 @@ struct NowPlayingNotchContent: NotchContentProtocol, DynamicIslandCustomizable {
         }
     }
     
-    /// Wnotch: show a synced lyric line under the notch while Spotify is the source.
+    /// Wnotch: while Spotify plays, the compact notch shows only the synced lyric line.
     @MainActor
     var showsSpotifyLyrics: Bool {
         settings.isSpotifyNotchLyricsEnabled &&
         nowPlayingViewModel.snapshot?.playbackSource?.preferredBundleIdentifier == "com.spotify.client"
     }
 
-    private var lyricsExtraHeight: CGFloat {
-        showsSpotifyLyrics ? 22 : 0
-    }
-
-    private var lyricsExtraWidth: CGFloat {
-        showsSpotifyLyrics ? 150 : 0
-    }
-
     func compactSize(baseWidth: CGFloat, baseHeight: CGFloat) -> CGSize {
-        .init(width: baseWidth + max(70, lyricsExtraWidth), height: baseHeight + lyricsExtraHeight)
+        // Physical notch hides the top band, so the lyric sits in a strip below it.
+        showsSpotifyLyrics
+            ? .init(width: baseWidth + 150, height: baseHeight + 24)
+            : .init(width: baseWidth + 70, height: baseHeight)
     }
     
     func dynamicIslandSize(baseWidth: CGFloat, baseHeight: CGFloat) -> CGSize {
-        .init(width: baseWidth + max(65, lyricsExtraWidth), height: baseHeight + lyricsExtraHeight)
+        // No physical notch: the lyric fits inside the floating pill itself.
+        .init(width: baseWidth + (showsSpotifyLyrics ? 200 : 65), height: baseHeight)
     }
     
     func expandedSize(baseWidth: CGFloat, baseHeight: CGFloat) -> CGSize {
@@ -83,21 +79,16 @@ struct NowPlayingNotchContent: NotchContentProtocol, DynamicIslandCustomizable {
     
     @MainActor
     func compactView() -> AnyView {
-        let minimal = NowPlayingMinimalNotchView(
-            nowPlayingViewModel: nowPlayingViewModel,
-            settings: settings
-        )
+        guard showsSpotifyLyrics else {
+            return AnyView(
+                NowPlayingMinimalNotchView(
+                    nowPlayingViewModel: nowPlayingViewModel,
+                    settings: settings
+                )
+            )
+        }
 
-        guard showsSpotifyLyrics else { return AnyView(minimal) }
-
-        return AnyView(
-            VStack(spacing: 0) {
-                minimal.frame(maxHeight: .infinity)
-                NowPlayingNotchLyricLineView(nowPlayingViewModel: nowPlayingViewModel)
-                    .frame(height: 22)
-                    .padding(.bottom, 4)
-            }
-        )
+        return AnyView(SpotifyLyricsNotchView(nowPlayingViewModel: nowPlayingViewModel))
     }
     
     @MainActor

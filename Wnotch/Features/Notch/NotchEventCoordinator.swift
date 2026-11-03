@@ -32,6 +32,7 @@ final class NotchEventCoordinator: ObservableObject {
     private let onboardingHandler: NotchOnboardingEventsHandler
     private let softwareUpdateHandler: NotchSoftwareUpdateEventsHandler
     private var settingsObserver: NotchSettingsObserver?
+    private var idleHandler: NotchIdleEventsHandler?
     private var cancellables = Set<AnyCancellable>()
 
     var isOnboardingActive: Bool {
@@ -113,6 +114,11 @@ final class NotchEventCoordinator: ObservableObject {
             notchViewModel: notchViewModel,
             powerService: powerService,
             settingsViewModel: settingsViewModel
+        )
+        self.idleHandler = NotchIdleEventsHandler(
+            notchViewModel: notchViewModel,
+            powerService: powerService,
+            settings: settingsViewModel.application
         )
         self.mediaHandler = NotchMediaEventsHandler(
             notchViewModel: notchViewModel,

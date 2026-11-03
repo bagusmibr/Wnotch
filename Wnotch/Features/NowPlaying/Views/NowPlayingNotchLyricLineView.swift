@@ -11,13 +11,13 @@ struct NowPlayingNotchLyricLineView: View {
     @ObservedObject var nowPlayingViewModel: NowPlayingViewModel
 
     var body: some View {
-        TimelineView(.periodic(from: .now, by: 0.25)) { context in
+        TimelineView(.periodic(from: .now, by: 0.2)) { context in
             let line = currentLine(at: context.date)
             Text(line)
-                .font(.system(size: 12, weight: .semibold, design: .rounded))
-                .foregroundStyle(.white.opacity(0.92))
+                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                .foregroundStyle(.white.opacity(0.95))
                 .lineLimit(1)
-                .minimumScaleFactor(0.7)
+                .minimumScaleFactor(0.65)
                 .frame(maxWidth: .infinity)
                 .id(line)
                 .transition(.opacity.combined(with: .move(edge: .bottom)))
@@ -25,13 +25,22 @@ struct NowPlayingNotchLyricLineView: View {
         }
         .padding(.horizontal, 14)
         // Lyrics are fetched only while some view needs them (same mechanism as lock screen).
-        .onAppear { nowPlayingViewModel.setLyricsPresentationActive(true, source: "spotifyNotch") }
-        .onDisappear { nowPlayingViewModel.setLyricsPresentationActive(false, source: "spotifyNotch") }
+        // Detailed presentation turns on Spotify position polling so seeks resync quickly.
+        .onAppear {
+            nowPlayingViewModel.setLyricsPresentationActive(true, source: "spotifyNotch")
+            nowPlayingViewModel.setDetailedPresentationActive(true, source: "spotifyNotch")
+        }
+        .onDisappear {
+            nowPlayingViewModel.setLyricsPresentationActive(false, source: "spotifyNotch")
+            nowPlayingViewModel.setDetailedPresentationActive(false, source: "spotifyNotch")
+        }
     }
 
     private func currentLine(at date: Date) -> String {
+        let title = nowPlayingViewModel.snapshot?.title ?? ""
+
         guard case .loaded(let lyrics) = nowPlayingViewModel.lyricsState else {
-            return nowPlayingViewModel.snapshot?.title ?? ""
+            return title
         }
 
         if let index = lyrics.activeLineIndex(at: nowPlayingViewModel.elapsedTime(at: date)),
@@ -41,6 +50,25 @@ struct NowPlayingNotchLyricLineView: View {
         }
 
         // ponytail: unsynced lyrics only show the title; add plain-text scrolling if users ask.
-        return nowPlayingViewModel.snapshot?.title ?? ""
+        return title
+    }
+}
+
+/// Lyrics-only compact layout: no artwork, no equalizer.
+struct SpotifyLyricsNotchView: View {
+    @Environment(\.isNotchlessScreen) private var isNotchlessScreen
+    @ObservedObject var nowPlayingViewModel: NowPlayingViewModel
+
+    var body: some View {
+        if isNotchlessScreen {
+            NowPlayingNotchLyricLineView(nowPlayingViewModel: nowPlayingViewModel)
+        } else {
+            VStack(spacing: 0) {
+                Spacer(minLength: 0)
+                NowPlayingNotchLyricLineView(nowPlayingViewModel: nowPlayingViewModel)
+                    .frame(height: 20)
+                    .padding(.bottom, 5)
+            }
+        }
     }
 }

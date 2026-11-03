@@ -452,7 +452,9 @@ private extension MediaRemoteNowPlayingService {
         guard applicationPlaybackPollTimer == nil else { return }
 
         let timer = DispatchSource.makeTimerSource(queue: callbackQueue)
-        timer.schedule(deadline: .now() + 1.5, repeating: 2.5)
+        // ponytail: 1s keeps lyrics in sync after a seek in Spotify (it posts no notification on seek).
+        // Only runs while a detailed view (expanded player / lyrics notch) is visible.
+        timer.schedule(deadline: .now() + 0.5, repeating: 1.0)
         timer.setEventHandler { [weak self] in
             self?.scheduleApplicationPlaybackRefresh(
                 for: self?.lastSnapshot,
@@ -713,7 +715,13 @@ private extension NowPlayingSnapshot {
         let resolvedRefreshedAt: Date
 
         if let stateElapsed = state.elapsedTime,
-           (elapsedTime <= 0 && duration > 0 || abs(stateElapsed - elapsedTime(at: state.refreshedAt)) > 3.0) {
+           PlaybackPositionResolver.shouldAdopt(
+               appElapsed: stateElapsed,
+               appReadAt: state.refreshedAt,
+               snapshotElapsedAtAppRead: elapsedTime(at: state.refreshedAt),
+               snapshotReadAt: refreshedAt,
+               snapshotHasNoPosition: elapsedTime <= 0 && duration > 0
+           ) {
             resolvedElapsedTime = stateElapsed
             resolvedRefreshedAt = state.refreshedAt
         } else {

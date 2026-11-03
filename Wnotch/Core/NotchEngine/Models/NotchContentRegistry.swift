@@ -123,6 +123,11 @@ enum NotchContentRegistry {
         ]
     }
 
+    enum Idle {
+        /// Lowest priority: any other live activity (music, timer, ...) replaces it.
+        static let clock = NotchContentDescriptor(id: "idle.clock", priority: NotchContentPriority.default)
+    }
+
     enum LockScreen {
         static let activity = NotchContentDescriptor(
             id: "lockScreen",

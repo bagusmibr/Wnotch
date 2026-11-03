@@ -88,6 +88,20 @@ struct DisplaySettingsView: View {
                 .frame(maxWidth: .infinity, alignment: .trailing)
             
             SettingsToggleRow(
+                title: "settings.notch.idleWidget.title",
+                description: "settings.notch.idleWidget.desc",
+                systemImage: "clock.fill",
+                color: .indigo,
+                isOn: $applicationSettings.isIdleNotchWidgetEnabled,
+                accessibilityIdentifier: "settings.notch.idleWidget"
+            )
+            
+            Divider()
+                .opacity(0.6)
+                .padding(.leading, 43)
+                .frame(maxWidth: .infinity, alignment: .trailing)
+            
+            SettingsToggleRow(
                 title: "settings.general.display.closeAtFocus.title",
                 description: "settings.general.display.closeAtFocus.description",
                 systemImage: "macwindow.and.pointer.arrow",

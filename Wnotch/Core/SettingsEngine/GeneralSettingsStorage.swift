@@ -20,6 +20,7 @@ enum GeneralSettingsStorage {
         static let hideNotchInFullscreenEnabled = "settings.general.hideNotchInFullscreen"
         static let hideDynamicIslandInFullscreenEnabled = "settings.general.hideDynamicIslandInFullscreen"
         static let notchlessWindowMarginEnabled = "settings.notchless.windowMargin.enabled"
+        static let idleNotchWidgetEnabled = "settings.notch.idleWidget.enabled"
         static let notchlessWindowMarginOffset = "settings.notchless.windowMargin.offset"
         static let notchTapToExpandEnabled = "settings.notch.gestures.tapToExpand"
         static let notchExpandInteraction = "settings.notch.gestures.expandInteraction"
@@ -152,6 +153,7 @@ enum GeneralSettingsStorage {
         Keys.hideNotchInFullscreenEnabled: true,
         Keys.hideDynamicIslandInFullscreenEnabled: true,
         Keys.notchlessWindowMarginEnabled: true,
+        Keys.idleNotchWidgetEnabled: true,
         Keys.notchlessWindowMarginOffset: 17,
         Keys.notchTapToExpandEnabled: true,
         Keys.notchExpandInteraction: NotchExpandInteraction.pressAndHold.rawValue,
