@@ -47,6 +47,19 @@ struct NowPlayingSettingsView: View {
 
             Divider().opacity(0.6)
 
+            SettingsToggleRow(
+                title: "settings.nowPlaying.spotifyControls.title",
+                description: "settings.nowPlaying.spotifyControls.desc",
+                systemImage: "playpause.fill",
+                color: .green,
+                isOn: $settings.isSpotifyNotchControlsEnabled,
+                accessibilityIdentifier: "settings.activities.live.nowPlaying.spotifyControls"
+            )
+            .disabled(!settings.isSpotifyNotchLyricsEnabled)
+            .opacity(settings.isSpotifyNotchLyricsEnabled ? 1 : 0.5)
+
+            Divider().opacity(0.6)
+
             SettingsMenuRow(
                 title: "settings.nowPlaying.playbackSource.title",
                 description: "settings.nowPlaying.playbackSource.desc",

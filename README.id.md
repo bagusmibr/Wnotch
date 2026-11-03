@@ -29,6 +29,7 @@
 | | |
 |---|---|
 | 🎤 **Lirik Spotify** | Saat Spotify diputar, notch hanya menampilkan baris lirik yang sedang dinyanyikan, tetap pas walau lagu dimajukan atau dimundurkan. |
+| ⏯️ **Kontrol di atas lirik** | Tombol sebelumnya, putar/jeda, dan berikutnya langsung di atas lirik, tanpa perlu membuka Spotify. |
 | 🕘 **Tidak pernah kosong** | Tidak ada lagu? Notch menampilkan jam dan sisa baterai. |
 | 🏝️ **Bisa tanpa notch** | Di Mac tanpa notch dan monitor eksternal, Wnotch tampil sebagai kapsul mengambang di atas layar. |
 | 🎵 **Now Playing** | Kontrol musik, gambar album, dan progres lagu untuk Spotify, Apple Music, dan lainnya. |

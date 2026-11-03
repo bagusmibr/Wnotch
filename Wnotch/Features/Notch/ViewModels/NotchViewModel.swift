@@ -18,6 +18,13 @@ final class NotchViewModel: ObservableObject {
     @Published var isHoveringScrollableContent = false
     @Published var showNotch = false
     @Published var isPressed = false
+    /// Set by inline controls inside compact content (e.g. lyrics play/skip) so the
+    /// notch-wide tap gesture does not also expand the notch or open the source app.
+    var lastInlineControlTapDate: Date?
+    var didInlineControlClaimRecentTap: Bool {
+        guard let date = lastInlineControlTapDate else { return false }
+        return Date().timeIntervalSince(date) < 0.6
+    }
     @Published var cachedStrokeColor: Color = .clear
     @Published var pressScale: CGFloat = 1.0
     

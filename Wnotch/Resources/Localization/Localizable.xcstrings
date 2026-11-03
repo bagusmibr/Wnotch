@@ -150125,6 +150125,40 @@
         }
       }
     },
+    "settings.nowPlaying.spotifyControls.desc": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show previous, play/pause and next buttons above the lyric."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tampilkan tombol sebelumnya, putar/jeda, dan berikutnya di atas lirik."
+          }
+        }
+      }
+    },
+    "settings.nowPlaying.spotifyControls.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Music controls above lyrics"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kontrol musik di atas lirik"
+          }
+        }
+      }
+    },
     "settings.nowPlaying.spotifyLyrics.desc": {
       "extractionState": "manual",
       "localizations": {

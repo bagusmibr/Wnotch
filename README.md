@@ -29,6 +29,7 @@
 | | |
 |---|---|
 | 🎤 **Spotify lyrics** | While Spotify plays, the notch shows only the current lyric line, synced to the song, even after you skip forward or back. |
+| ⏯️ **Controls above the lyrics** | Previous, play/pause and next sit right above the lyric, no need to open Spotify. |
 | 🕘 **Never empty** | Nothing playing? The notch shows the time and your battery level. |
 | 🏝️ **Works without a notch** | On Macs without a notch and on external monitors, Wnotch floats as an island at the top of the screen. |
 | 🎵 **Now Playing** | Media controls, artwork, and progress for Spotify, Apple Music and more. |

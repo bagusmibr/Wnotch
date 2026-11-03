@@ -62,6 +62,7 @@ enum GeneralSettingsStorage {
         static let nowPlayingPauseHideDelay = "settings.nowPlaying.pauseHideDelay"
         static let nowPlayingSourceFilter = "settings.nowPlaying.sourceFilter"
         static let spotifyNotchLyricsEnabled = "settings.nowPlaying.spotifyNotchLyricsEnabled"
+        static let spotifyNotchControlsEnabled = "settings.nowPlaying.spotifyNotchControlsEnabled"
         static let downloadsLiveActivityEnabled = "settings.live.downloads"
         static let downloadsProgressIndicatorStyle = "settings.live.downloads.progressIndicatorStyle"
         static let dragAndDropLiveActivityEnabled = "settings.live.dragAndDrop"
@@ -195,6 +196,7 @@ enum GeneralSettingsStorage {
         Keys.nowPlayingPauseHideDelay: 5,
         Keys.nowPlayingSourceFilter: NowPlayingSourceFilter.any.rawValue,
         Keys.spotifyNotchLyricsEnabled: true,
+        Keys.spotifyNotchControlsEnabled: true,
         Keys.downloadsLiveActivityEnabled: true,
         Keys.downloadsProgressIndicatorStyle: DownloadProgressIndicatorStyle.percent.rawValue,
         Keys.dragAndDropLiveActivityEnabled: true,

@@ -13,14 +13,17 @@ struct NowPlayingNotchContent: NotchContentProtocol, DynamicIslandCustomizable {
     let settings: MediaAndFilesSettingsStore
     let applicationSettings: ApplicationSettingsStore
     let onOpenPlaybackSource: @MainActor () -> Void
+    let notchViewModel: NotchViewModel?
 
     init(
         nowPlayingViewModel: NowPlayingViewModel,
         settings: MediaAndFilesSettingsStore,
         applicationSettings: ApplicationSettingsStore,
+        notchViewModel: NotchViewModel? = nil,
         onOpenPlaybackSource: @escaping @MainActor () -> Void = {}
     ) {
         self.nowPlayingViewModel = nowPlayingViewModel
+        self.notchViewModel = notchViewModel
         self.settings = settings
         self.applicationSettings = applicationSettings
         self.onOpenPlaybackSource = onOpenPlaybackSource
@@ -48,15 +51,19 @@ struct NowPlayingNotchContent: NotchContentProtocol, DynamicIslandCustomizable {
     func compactSize(baseWidth: CGFloat, baseHeight: CGFloat) -> CGSize {
         // Physical notch hides the top band, so the lyric sits in a strip below it (up to 2 lines).
         showsSpotifyLyrics
-            ? .init(width: baseWidth + NowPlayingLyricsLayout.extraWidth, height: baseHeight + NowPlayingLyricsLayout.stripHeight)
+            ? .init(width: baseWidth + NowPlayingLyricsLayout.extraWidth, height: baseHeight + NowPlayingLyricsLayout.stripHeight + controlsHeight)
             : .init(width: baseWidth + 70, height: baseHeight)
     }
     
     func dynamicIslandSize(baseWidth: CGFloat, baseHeight: CGFloat) -> CGSize {
         // No physical notch: the floating pill grows to fit up to 2 lines.
         showsSpotifyLyrics
-            ? .init(width: baseWidth + NowPlayingLyricsLayout.extraWidth, height: baseHeight + NowPlayingLyricsLayout.islandExtraHeight)
+            ? .init(width: baseWidth + NowPlayingLyricsLayout.extraWidth, height: baseHeight + NowPlayingLyricsLayout.islandExtraHeight + controlsHeight)
             : .init(width: baseWidth + 65, height: baseHeight)
+    }
+
+    private var controlsHeight: CGFloat {
+        settings.isSpotifyNotchControlsEnabled ? NowPlayingLyricsLayout.controlsHeight : 0
     }
     
     func expandedSize(baseWidth: CGFloat, baseHeight: CGFloat) -> CGSize {
@@ -91,7 +98,13 @@ struct NowPlayingNotchContent: NotchContentProtocol, DynamicIslandCustomizable {
             )
         }
 
-        return AnyView(SpotifyLyricsNotchView(nowPlayingViewModel: nowPlayingViewModel))
+        return AnyView(
+            SpotifyLyricsNotchView(
+                nowPlayingViewModel: nowPlayingViewModel,
+                showsControls: settings.isSpotifyNotchControlsEnabled,
+                onControlTap: { [weak notchViewModel] in notchViewModel?.lastInlineControlTapDate = .now }
+            )
+        )
     }
     
     @MainActor

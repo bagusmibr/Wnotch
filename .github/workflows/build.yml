@@ -19,7 +19,7 @@ jobs:
           sudo xcode-select -s "$XCODE"
           xcodebuild -version
 
-      - name: Unit tests (lyrics + playback sync)
+      - name: Unit tests (lyrics, playback sync, notch)
         run: |
           xcodebuild test \
             -project Wnotch.xcodeproj -scheme Wnotch -destination 'platform=macOS' \
@@ -27,6 +27,8 @@ jobs:
             -only-testing:WnotchTests/LyricsTitleCleanerTests \
             -only-testing:WnotchTests/PlaybackPositionResolverTests \
             -only-testing:WnotchTests/NowPlayingViewModelIntegrationTests \
+            -only-testing:WnotchTests/InlineControlTapClaimTests \
+            -only-testing:WnotchTests/NotchViewModelIntegrationTests \
             | tail -40
           exit ${PIPESTATUS[0]}
 

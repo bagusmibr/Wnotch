@@ -84,7 +84,8 @@ private extension NotchCustomScaleModifier {
 
                         let isValidPress = hitBounds.contains(value.location) &&
                         isPressValidForTap &&
-                        !didCompleteExpandAction
+                        !didCompleteExpandAction &&
+                        !notchViewModel.didInlineControlClaimRecentTap
 
                         let shouldCancelScale = !isValidPress && !shouldMaintainHoverScaleAfterRelease
                         resetInteractionState(cancelScaleAnimation: shouldCancelScale)
@@ -182,6 +183,7 @@ private extension NotchCustomScaleModifier {
             guard pendingHoldExpansionToken == token,
                   isPressed,
                   notchViewModel.shouldExpandActiveContentOnPressAndHold,
+                  !notchViewModel.didInlineControlClaimRecentTap,
                   !notchViewModel.notchModel.isPresentingExpandedLiveActivity else {
                 return
             }

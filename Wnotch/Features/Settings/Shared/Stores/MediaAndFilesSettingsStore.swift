@@ -31,6 +31,9 @@ final class MediaAndFilesSettingsStore: SettingsStoreBase {
     @StoredDefault(key: GeneralSettingsStorage.Keys.spotifyNotchLyricsEnabled, defaultValue: true)
     var isSpotifyNotchLyricsEnabled: Bool
 
+    @StoredDefault(key: GeneralSettingsStorage.Keys.spotifyNotchControlsEnabled, defaultValue: true)
+    var isSpotifyNotchControlsEnabled: Bool
+
     @StoredDefault(
         key: GeneralSettingsStorage.Keys.nowPlayingPauseHideDelay,
         defaultValue: 3,
@@ -108,6 +111,7 @@ final class MediaAndFilesSettingsStore: SettingsStoreBase {
         nowPlayingProgressTintStyle = .default
         isNowPlayingPauseHideTimerEnabled = defaultBool(for: GeneralSettingsStorage.Keys.nowPlayingPauseHideTimerEnabled)
         isSpotifyNotchLyricsEnabled = defaultBool(for: GeneralSettingsStorage.Keys.spotifyNotchLyricsEnabled)
+        isSpotifyNotchControlsEnabled = defaultBool(for: GeneralSettingsStorage.Keys.spotifyNotchControlsEnabled)
         nowPlayingPauseHideDelay = defaultInt(for: GeneralSettingsStorage.Keys.nowPlayingPauseHideDelay)
         nowPlayingSourceFilter = .any
     }

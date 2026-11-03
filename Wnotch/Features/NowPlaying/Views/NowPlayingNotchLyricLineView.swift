@@ -63,24 +63,89 @@ enum NowPlayingLyricsLayout {
     static let stripHeight: CGFloat = 40
     /// Extra height for the floating pill on notchless screens.
     static let islandExtraHeight: CGFloat = 14
+    /// Row of previous / play-pause / next above the lyric.
+    static let controlsHeight: CGFloat = 30
 }
 
-/// Lyrics-only compact layout: no artwork, no equalizer.
+/// Lyrics layout: optional music controls on top, the synced lyric below. No artwork, no equalizer.
 struct SpotifyLyricsNotchView: View {
     @Environment(\.isNotchlessScreen) private var isNotchlessScreen
     @ObservedObject var nowPlayingViewModel: NowPlayingViewModel
+    var showsControls: Bool = true
+    var onControlTap: () -> Void = {}
 
     var body: some View {
-        if isNotchlessScreen {
-            NowPlayingNotchLyricLineView(nowPlayingViewModel: nowPlayingViewModel)
-                .padding(.vertical, 4)
-        } else {
-            VStack(spacing: 0) {
+        VStack(spacing: 0) {
+            if !isNotchlessScreen {
+                // Top band sits behind the physical notch; keep content below it.
                 Spacer(minLength: 0)
-                NowPlayingNotchLyricLineView(nowPlayingViewModel: nowPlayingViewModel)
-                    .frame(height: NowPlayingLyricsLayout.stripHeight - 6)
-                    .padding(.bottom, 6)
+            }
+
+            if showsControls {
+                NowPlayingNotchInlineControls(
+                    nowPlayingViewModel: nowPlayingViewModel,
+                    onControlTap: onControlTap
+                )
+                .frame(height: NowPlayingLyricsLayout.controlsHeight)
+            }
+
+            NowPlayingNotchLyricLineView(nowPlayingViewModel: nowPlayingViewModel)
+                .frame(height: isNotchlessScreen ? nil : NowPlayingLyricsLayout.stripHeight - 6)
+                .frame(maxHeight: isNotchlessScreen ? .infinity : nil)
+                .padding(.bottom, isNotchlessScreen ? 4 : 6)
+        }
+        .padding(.top, isNotchlessScreen ? 4 : 0)
+    }
+}
+
+/// Compact previous / play-pause / next row for the lyrics notch.
+struct NowPlayingNotchInlineControls: View {
+    @ObservedObject var nowPlayingViewModel: NowPlayingViewModel
+    let onControlTap: () -> Void
+
+    var body: some View {
+        HStack(spacing: 28) {
+            control("backward.fill", size: 14, label: "Previous track") {
+                nowPlayingViewModel.previousTrack()
+            }
+            control(
+                nowPlayingViewModel.snapshot?.isPlaying == true ? "pause.fill" : "play.fill",
+                size: 18,
+                label: nowPlayingViewModel.snapshot?.isPlaying == true ? "Pause" : "Play"
+            ) {
+                nowPlayingViewModel.togglePlayPause()
+            }
+            control("forward.fill", size: 14, label: "Next track") {
+                nowPlayingViewModel.nextTrack()
             }
         }
+        .frame(maxWidth: .infinity)
+    }
+
+    private func control(_ symbol: String, size: CGFloat, label: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: symbol)
+                .font(.system(size: size, weight: .semibold))
+                .foregroundStyle(.white)
+                .contentTransition(.symbolEffect(.replace))
+                .frame(width: 30, height: 26)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(InlineControlButtonStyle())
+        .accessibilityLabel(label)
+        // Claim the press as soon as it starts, before the notch-wide gesture can
+        // expand (press-and-hold) or open Spotify (click) on release.
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 0).onChanged { _ in onControlTap() }
+        )
+    }
+}
+
+private struct InlineControlButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .opacity(configuration.isPressed ? 0.55 : 1)
+            .scaleEffect(configuration.isPressed ? 0.88 : 1)
+            .animation(.easeOut(duration: 0.12), value: configuration.isPressed)
     }
 }
