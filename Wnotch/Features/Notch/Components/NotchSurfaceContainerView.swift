@@ -5,10 +5,9 @@ struct NotchSurfaceContainerView: View {
     @ObservedObject var settingsViewModel: SettingsViewModel
     
     var body: some View {
+        // The base pill is drawn *under* the content: it is black on a black surface, so drawing
+        // it on top only hid whatever sat in the centre (e.g. the lyric line).
         notchSurface
-            .overlay {
-                contentOverlayWrapped
-            }
             .overlay(alignment: .top) {
                 if notchViewModel.isDynamicIsland,
                    notchViewModel.notchModel.baseWidth > 0,
@@ -18,6 +17,9 @@ struct NotchSurfaceContainerView: View {
                         .frame(width: notchViewModel.notchModel.baseWidth, height: notchViewModel.notchModel.baseHeight)
                         .allowsHitTesting(false)
                 }
+            }
+            .overlay {
+                contentOverlayWrapped
             }
     }
     

@@ -46,15 +46,17 @@ struct NowPlayingNotchContent: NotchContentProtocol, DynamicIslandCustomizable {
     }
 
     func compactSize(baseWidth: CGFloat, baseHeight: CGFloat) -> CGSize {
-        // Physical notch hides the top band, so the lyric sits in a strip below it.
+        // Physical notch hides the top band, so the lyric sits in a strip below it (up to 2 lines).
         showsSpotifyLyrics
-            ? .init(width: baseWidth + 150, height: baseHeight + 24)
+            ? .init(width: baseWidth + NowPlayingLyricsLayout.extraWidth, height: baseHeight + NowPlayingLyricsLayout.stripHeight)
             : .init(width: baseWidth + 70, height: baseHeight)
     }
     
     func dynamicIslandSize(baseWidth: CGFloat, baseHeight: CGFloat) -> CGSize {
-        // No physical notch: the lyric fits inside the floating pill itself.
-        .init(width: baseWidth + (showsSpotifyLyrics ? 200 : 65), height: baseHeight)
+        // No physical notch: the floating pill grows to fit up to 2 lines.
+        showsSpotifyLyrics
+            ? .init(width: baseWidth + NowPlayingLyricsLayout.extraWidth, height: baseHeight + NowPlayingLyricsLayout.islandExtraHeight)
+            : .init(width: baseWidth + 65, height: baseHeight)
     }
     
     func expandedSize(baseWidth: CGFloat, baseHeight: CGFloat) -> CGSize {
@@ -70,7 +72,8 @@ struct NowPlayingNotchContent: NotchContentProtocol, DynamicIslandCustomizable {
     }
 
     func dynamicIslandCornerRadius(baseHeight: CGFloat) -> CGFloat {
-        baseHeight * 0.5
+        // Softer corners for the taller lyrics pill so the text corners are not clipped.
+        showsSpotifyLyrics ? min(baseHeight * 0.5, 20) : baseHeight * 0.5
     }
 
     func expandedDynamicIslandCornerRadius(baseHeight: CGFloat) -> CGFloat {

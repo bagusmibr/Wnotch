@@ -19,6 +19,17 @@ jobs:
           sudo xcode-select -s "$XCODE"
           xcodebuild -version
 
+      - name: Unit tests (lyrics + playback sync)
+        run: |
+          xcodebuild test \
+            -project Wnotch.xcodeproj -scheme Wnotch -destination 'platform=macOS' \
+            -derivedDataPath build/TestData CODE_SIGNING_ALLOWED=NO \
+            -only-testing:WnotchTests/LyricsTitleCleanerTests \
+            -only-testing:WnotchTests/PlaybackPositionResolverTests \
+            -only-testing:WnotchTests/NowPlayingViewModelIntegrationTests \
+            | tail -40
+          exit ${PIPESTATUS[0]}
+
       - name: Build DMG
         run: ./build_dmg.sh
 

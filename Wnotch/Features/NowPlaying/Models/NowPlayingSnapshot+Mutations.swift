@@ -56,6 +56,29 @@ extension NowPlayingSnapshot {
         )
     }
 
+    /// Copy used only for lyrics lookups (cleaned title / primary artist).
+    func settingLookupMetadata(title newTitle: String, artist newArtist: String) -> Self {
+        Self(
+            title: newTitle,
+            artist: newArtist,
+            album: album,
+            duration: duration,
+            elapsedTime: elapsedTime,
+            playbackRate: playbackRate,
+            artworkData: artworkData,
+            playbackSource: playbackSource,
+            mediaType: mediaType,
+            contentItemIdentifier: contentItemIdentifier,
+            isShuffled: isShuffled,
+            repeatMode: repeatMode,
+            volume: volume,
+            isFavorite: isFavorite,
+            supportsFavorite: supportsFavorite,
+            supportsVolumeControl: supportsVolumeControl,
+            refreshedAt: refreshedAt
+        )
+    }
+
     func settingElapsedTime(_ newElapsedTime: TimeInterval) -> Self {
         Self(
             title: title,

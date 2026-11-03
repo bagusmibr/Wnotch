@@ -35,7 +35,7 @@ final class LRCLIBLyricsProvider: LyricsProviding {
 
     init() {
         let configuration = URLSessionConfiguration.default
-        configuration.requestCachePolicy = .returnCacheDataElseLoad
+        configuration.requestCachePolicy = .useProtocolCachePolicy
         configuration.timeoutIntervalForRequest = 30
         configuration.timeoutIntervalForResource = 45
         session = URLSession(configuration: configuration)
@@ -48,14 +48,26 @@ final class LRCLIBLyricsProvider: LyricsProviding {
             return cached.lyrics
         }
 
-        if let exactLyrics = try await fetchExactLyrics(for: snapshot, trackKey: trackKey) {
-            cache[trackKey] = .found(exactLyrics)
-            return exactLyrics
+        // Spotify titles often carry suffixes LRCLIB doesn't index ("- From X Soundtrack",
+        // "- Remastered 2011", "(feat. Y)"). Try the raw title first, then the cleaned one.
+        let variants = LyricsTitleCleaner.searchVariants(for: snapshot)
+
+        for variant in variants {
+            if let exactLyrics = try await fetchExactLyrics(for: variant, trackKey: trackKey) {
+                cache[trackKey] = .found(exactLyrics)
+                return exactLyrics
+            }
         }
 
-        let searchedLyrics = try await searchLyrics(for: snapshot, trackKey: trackKey)
-        cache[trackKey] = searchedLyrics.map(CacheEntry.found) ?? .missing
-        return searchedLyrics
+        for variant in variants {
+            if let searchedLyrics = try await searchLyrics(for: variant, trackKey: trackKey) {
+                cache[trackKey] = .found(searchedLyrics)
+                return searchedLyrics
+            }
+        }
+
+        cache[trackKey] = .missing
+        return nil
     }
 
     func invalidateCache(for snapshot: NowPlayingSnapshot) {
@@ -66,7 +78,7 @@ final class LRCLIBLyricsProvider: LyricsProviding {
     private func fetchExactLyrics(for snapshot: NowPlayingSnapshot, trackKey: String) async throws -> TrackLyrics? {
         guard let url = makeURL(
             endpoint: "get",
-            queryItems: queryItems(for: snapshot, includeAlbum: true, includeDuration: true)
+            queryItems: queryItems(for: snapshot, includeAlbum: false, includeDuration: true)
         ) else {
             return nil
         }
@@ -144,18 +156,27 @@ final class LRCLIBLyricsProvider: LyricsProviding {
             forHTTPHeaderField: "User-Agent"
         )
 
-        let (data, response) = try await session.data(for: request)
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw URLError(.badServerResponse)
-        }
+        // LRCLIB answers 429/503 ("server is busy") under load; retry briefly before giving up.
+        let busyRetryDelays: [UInt64] = [700_000_000, 1_500_000_000, 3_000_000_000]
+        var attempt = 0
 
-        switch httpResponse.statusCode {
-        case 200..<300:
-            return data
-        case 404 where allowsNotFound:
-            return nil
-        default:
-            throw URLError(.badServerResponse)
+        while true {
+            let (data, response) = try await session.data(for: request)
+            guard let httpResponse = response as? HTTPURLResponse else {
+                throw URLError(.badServerResponse)
+            }
+
+            switch httpResponse.statusCode {
+            case 200..<300:
+                return data
+            case 404 where allowsNotFound:
+                return nil
+            case 429, 500...599 where attempt < busyRetryDelays.count:
+                try await Task.sleep(nanoseconds: busyRetryDelays[attempt])
+                attempt += 1
+            default:
+                throw URLError(.badServerResponse)
+            }
         }
     }
 

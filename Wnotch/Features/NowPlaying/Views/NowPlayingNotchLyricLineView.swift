@@ -16,14 +16,16 @@ struct NowPlayingNotchLyricLineView: View {
             Text(line)
                 .font(.system(size: 13, weight: .semibold, design: .rounded))
                 .foregroundStyle(.white.opacity(0.95))
-                .lineLimit(1)
-                .minimumScaleFactor(0.65)
-                .frame(maxWidth: .infinity)
+                .multilineTextAlignment(.center)
+                .lineLimit(2)
+                .minimumScaleFactor(0.8)
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .id(line)
                 .transition(.opacity.combined(with: .move(edge: .bottom)))
                 .animation(.easeInOut(duration: 0.25), value: line)
         }
-        .padding(.horizontal, 14)
+        .padding(.horizontal, 18)
         // Lyrics are fetched only while some view needs them (same mechanism as lock screen).
         // Detailed presentation turns on Spotify position polling so seeks resync quickly.
         .onAppear {
@@ -54,6 +56,15 @@ struct NowPlayingNotchLyricLineView: View {
     }
 }
 
+enum NowPlayingLyricsLayout {
+    /// Wide enough for a typical lyric line; longer lines wrap to a second line.
+    static let extraWidth: CGFloat = 300
+    /// Strip under a physical notch: two 13pt lines + margins.
+    static let stripHeight: CGFloat = 40
+    /// Extra height for the floating pill on notchless screens.
+    static let islandExtraHeight: CGFloat = 14
+}
+
 /// Lyrics-only compact layout: no artwork, no equalizer.
 struct SpotifyLyricsNotchView: View {
     @Environment(\.isNotchlessScreen) private var isNotchlessScreen
@@ -62,12 +73,13 @@ struct SpotifyLyricsNotchView: View {
     var body: some View {
         if isNotchlessScreen {
             NowPlayingNotchLyricLineView(nowPlayingViewModel: nowPlayingViewModel)
+                .padding(.vertical, 4)
         } else {
             VStack(spacing: 0) {
                 Spacer(minLength: 0)
                 NowPlayingNotchLyricLineView(nowPlayingViewModel: nowPlayingViewModel)
-                    .frame(height: 20)
-                    .padding(.bottom, 5)
+                    .frame(height: NowPlayingLyricsLayout.stripHeight - 6)
+                    .padding(.bottom, 6)
             }
         }
     }
